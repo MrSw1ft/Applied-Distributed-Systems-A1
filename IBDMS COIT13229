@@ -1,0 +1,45 @@
+To start my assignment I  began by preparing the Project in netbeans.
+I created my classes and named them Server.java, Client,java as well as Drone1&2.java
+Today I have managed to prepare the basics of the server.
+In my code I have implemented a server that listens for incoming client connections on port 8080.
+I have also spent time trying to get things right with the clienthandler object. 
+
+(Server.Java) 
+
+//Name:Roland Swift
+//Student Number:
+//Course:COIT13229
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+    
+    public static void main(String[] args) throws IOException {
+        
+        ServerSocket serverSocket = new ServerSocket(8080);
+        System.out.println("Server started on port 8080");
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            Thread thread = new Thread(new ClientHandler(clientSocket));
+            thread.start();
+        }
+        
+    }
+    
+    static class ClientHandler implements Runnable {
+        
+        private Socket clientSocket;
+        
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+        
+        @Override
+        public void run() {
+            // handle client request here
+        }
+    }
+}
