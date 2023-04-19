@@ -43,3 +43,48 @@ public class Server {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+I have now been working on additional code for my server setup. By using a thread per connection model. 
+It allows multiple drone requests to be executed simultaneously.
+The server side receives drone requests, processes them, and returns results using the BufferedReader and PrintWriter classes for input and output operations.
+The basic read and write operations needed to communicate between the client and server.
+        
+        
+        @Override
+        public void run() {
+            try {
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                while (true) {
+                    // receive message from drone
+                    String droneRequest = input.readLine();
+
+                    // process request
+                    String result = processDroneRequest(droneRequest);
+
+                    // send response back to drone
+                    output.println(result);
+                }
+
+            } catch (IOException e) {
+                System.err.println("I/O error occurred when communicating with the drone");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static String processDroneRequest(String request) {
+        // process drone request here and return result
+        return "Request processed: " + request;
+    }
+}
+
