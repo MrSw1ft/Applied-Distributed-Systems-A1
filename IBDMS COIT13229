@@ -1,3 +1,5 @@
+V1.0
+
 To start my assignment I  began by preparing the Project in netbeans.
 I created my classes and named them Server.java, Client,java as well as Drone1&2.java
 Today I have managed to prepare the basics of the server.
@@ -45,12 +47,8 @@ public class Server {
 }
 
 
-
-
-
-
-
-
+-----------------------------------------------------------------------------------------------------------------------------------
+V1.1
 
 I have now been working on additional code for my server setup. By using a thread per connection model. 
 It allows multiple drone requests to be executed simultaneously.
@@ -88,3 +86,105 @@ The basic read and write operations needed to communicate between the client and
     }
 }
 
+
+----------------------------------------------------------------------------------------------------------------------------------------
+V1.2
+
+I have been working on additions to my code for my server.java
+I have created a new  drone connection, which enables multiple drone requests to be executed at the same time.
+The DroneCommunicationThread class implements the Runnable interface, allowing it to be run in a separate thread. 
+Inside the run() method of this class, the drone request is received, processed, and the result is sent back to the drone.
+If the drone disconnects, the thread ends.
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+    
+    public static void main(String[] args) throws IOException {
+        
+        // create server socket on port 8080
+        ServerSocket serverSocket = new ServerSocket(8080);
+        System.out.println("Server started on port 8080");
+
+        while (true) {
+            try {
+                // wait for a new drone to connect
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
+
+                // create a new thread to handle this drone's communication
+                Thread t = new Thread(new DroneCommunicationThread(clientSocket));
+                t.start();
+
+            } catch (IOException e) {
+                System.err.println("Error accepting client connection");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // thread class to handle communication with a single drone
+    public static class DroneCommunicationThread implements Runnable {
+        private Socket clientSocket;
+
+        public DroneCommunicationThread(Socket clientSocket) {
+            this.clientSocket = clientSocket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                // set up input and output streams for communication with drone
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                while (true) {
+                    // receive message from drone
+                    String droneRequest = input.readLine();
+                    if (droneRequest == null) {
+                        // drone disconnected, break out of loop and end thread
+                        break;
+                    }
+
+                    // process request
+                    String result = processDroneRequest(droneRequest);
+
+                    // send response back to drone
+                    output.println(result);
+                }
+
+            } catch (IOException e) {
+                System.err.println("I/O error occurred when communicating with the drone");
+                e.printStackTrace();
+            } finally {
+                try {
+                    // close the client socket when communication with drone is finished
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // method to process drone requests
+    public static String processDroneRequest(String request) {
+        // process drone request here and return result
+        return "Request processed: " + request;
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------
+V1.3
+------------------------------------------------------------------------------------------------------------------------------
+V1.4
+------------------------------------------------------------------------------------------------------------------------------
+V1.5
+------------------------------------------------------------------------------------------------------------------------------
+V1.6
